@@ -3,15 +3,14 @@ const path = require('path');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 1280,
+    width: 1200,
     height: 800,
+    icon: path.join(__dirname, 'aegoonh.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true
-    },
-    autoHideMenuBar: true,
-    title: 'اتاج للمحاسبات'
+    }
   });
 
   mainWindow.loadFile('index.html');
