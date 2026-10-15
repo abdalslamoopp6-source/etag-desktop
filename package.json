@@ -20,16 +20,15 @@
   "build": {
     "appId": "com.etag.accounting",
     "productName": "EtajAccounting",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "abdalslamcopp6-source",
-        "repo": "etag-desktop"
-      }
-    ],
+    "publish": {
+      "provider": "github",
+      "owner": "abdalslamcopp6-source",
+      "repo": "etag-desktop"
+    },
     "win": {
       "target": "nsis",
-      "icon": "aegoonh.png"
+      "icon": "aegoonh.png",
+      "publish": ["never"]
     },
     "nsis": {
       "oneClick": true,
