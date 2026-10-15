@@ -182,9 +182,6 @@
         .empty-table-msg { text-align: center; padding: 35px; color: var(--text-muted); font-size: 0.95rem; }
 
         .section-header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 15px; }
-        .search-box { position: relative; min-width: 250px; flex-grow: 1; }
-        .search-box input { padding-right: 38px; border-radius: 8px; background: rgba(255, 255, 255, 0.9); }
-        .search-box i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         /* Modals & Forms */
         .modal-overlay {
@@ -208,7 +205,6 @@
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group.full-width { grid-column: 1 / -1; }
         .form-group label { font-size: 0.88rem; font-weight: 700; color: var(--text-main); }
         .form-control { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.93rem; outline: none; transition: border-color 0.2s; background: rgba(255,255,255,0.95); }
         .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 92, 77, 0.1); }
@@ -258,7 +254,7 @@
             <h2>تفعيل ترخيص البرنامج</h2>
             <div style="display: flex; flex-direction: column; gap: 15px; text-align: right;">
                 <div class="form-group">
-                    <label>رمز الترخيص *</label>
+                    <label>رمز الترخيص / رمز الإدارة *</label>
                     <input type="password" id="licenseInputCode" class="form-control" placeholder="أدخل الرمز هنا...">
                 </div>
                 <div style="display: flex; gap: 10px;">
@@ -632,7 +628,6 @@
 
         let currentActiveLicense = localStorage.getItem('etag_license_code');
 
-        // بيانات التطبيق المحلية المؤقتة
         let appData = {
             customers: JSON.parse(localStorage.getItem('etag_customers') || '[]'),
             suppliers: JSON.parse(localStorage.getItem('etag_suppliers') || '[]'),
@@ -658,13 +653,11 @@
             setTimeout(() => { t.className = 'toast'; }, 3000);
         }
 
-        // مراقبة الترخيص الفوري وحالة الحذف
         function checkLicenseRealtime(code) {
             if (!code) return;
             db.ref('licenses/' + code).on('value', snapshot => {
                 const val = snapshot.val();
                 if (!val) {
-                    // تم حذف الترخيص من لوحة التحكم!
                     localStorage.removeItem('etag_license_code');
                     alert("لقد تم فصلك من البرنامج وإلغاء ترخيصك بواسطة الإدارة.");
                     location.reload();
@@ -672,10 +665,11 @@
             });
         }
 
+        // زر دخول
         document.getElementById('submitLicenseBtn').addEventListener('click', () => {
             const code = document.getElementById('licenseInputCode').value.trim();
             if (!code) { showToast('أدخل رمز الترخيص', 'error'); return; }
-            if (code === 'ADMIN123') {
+            if (code === 'ADMIN123' || code === '000888') {
                 document.getElementById('licenseGateOverlay').style.display = 'none';
                 document.getElementById('adminDashboardWrapper').classList.add('active');
                 initAdminDashboard();
@@ -696,14 +690,25 @@
             });
         });
 
+        // زر طلب الوصول
         document.getElementById('requestAccessBtn').addEventListener('click', () => {
+            const code = document.getElementById('licenseInputCode').value.trim();
+            if (code === 'ADMIN123' || code === '000888') {
+                document.getElementById('licenseGateOverlay').style.display = 'none';
+                document.getElementById('adminDashboardWrapper').classList.add('active');
+                initAdminDashboard();
+                return;
+            }
+
             const reqId = 'REQ-' + Date.now();
             db.ref('requests/' + reqId).set({
                 deviceId: deviceId,
                 date: new Date().toLocaleDateString(),
                 status: 'معلق'
             }).then(() => {
-                showToast('تم إرسال طلب الوصول بنجاح، بانتظار الموافقة');
+                showToast('تم إرسال طلب الوصول بنجاح إلى الإدارة');
+            }).catch(err => {
+                showToast('حدث خطأ في الاتصال بقاعدة البيانات', 'error');
             });
         });
 
@@ -778,9 +783,8 @@
             });
         });
 
-        // التحقق عند الإقلاع للنسخة العادية
         if (currentActiveLicense) {
-            if (currentActiveLicense === 'ADMIN123') {
+            if (currentActiveLicense === 'ADMIN123' || currentActiveLicense === '000888') {
                 document.getElementById('licenseGateOverlay').style.display = 'none';
                 document.getElementById('adminDashboardWrapper').classList.add('active');
                 initAdminDashboard();
@@ -798,7 +802,6 @@
             }
         }
 
-        // تفاعل التنقل والواجهة الأساسية للمحاسبة
         document.querySelectorAll('.sidebar-menu li').forEach(li => {
             li.addEventListener('click', () => {
                 if (li.dataset.section === 'licenses_auth') {
@@ -830,7 +833,6 @@
             renderInventory();
         }
 
-        // إدارة العملاء (إضافة، تعديل، حذف)
         let editingCustIndex = null;
         document.getElementById('openAddCustomerModalBtn').addEventListener('click', () => {
             editingCustIndex = null;
@@ -888,7 +890,6 @@
             }
         };
 
-        // إدارة الموردين (إضافة، تعديل، حذف)
         let editingSuppIndex = null;
         document.getElementById('openAddSupplierModalBtn').addEventListener('click', () => {
             editingSuppIndex = null;
@@ -946,7 +947,6 @@
             }
         };
 
-        // إدارة الأصناف (إضافة، تعديل، حذف)
         let editingItemIndex = null;
         document.getElementById('openAddItemModalBtn').addEventListener('click', () => {
             editingItemIndex = null;
@@ -1009,7 +1009,6 @@
             }
         };
 
-        // المبيعات والفواتير
         let currentSaleItems = [];
         document.getElementById('openAddSaleModalBtn').addEventListener('click', () => {
             currentSaleItems = [];
@@ -1062,11 +1061,11 @@
             let totalInv = 0;
             currentSaleItems.forEach(si => {
                 totalInv += si.total;
-                appData.items[si.itemIndex].qty -= si.qty; // خصم المخزون
+                appData.items[si.itemIndex].qty -= si.qty;
             });
 
             const customerName = appData.customers[custIdx].name;
-            appData.customers[custIdx].balance += totalInv; // زيادة مديونية العميل
+            appData.customers[custIdx].balance += totalInv;
 
             const newSale = {
                 id: 'INV-' + Date.now(),
@@ -1109,7 +1108,6 @@
             window.print();
         };
 
-        // المشتريات (مع زر وطباعة فاتورة الشراء)
         let currentPurchaseItems = [];
         document.getElementById('openAddPurchaseModalBtn').addEventListener('click', () => {
             currentPurchaseItems = [];
@@ -1162,7 +1160,7 @@
             let totalInv = 0;
             currentPurchaseItems.forEach(pi => {
                 totalInv += pi.total;
-                appData.items[pi.itemIndex].qty += pi.qty; // زيادة المخزون
+                appData.items[pi.itemIndex].qty += pi.qty;
             });
 
             const supplierName = appData.suppliers[suppIdx].name;
@@ -1209,7 +1207,6 @@
             window.print();
         };
 
-        // المصروفات
         document.getElementById('openAddExpenseModalBtn').addEventListener('click', () => {
             document.getElementById('expDesc').value = '';
             document.getElementById('expAmount').value = '0';
@@ -1258,7 +1255,7 @@
             let totalCustDebts = 0;
             appData.customers.forEach(c => totalCustDebts += c.balance);
 
-            let totalProfit = totalSales * 0.2; // تقديري للأرباح
+            let totalProfit = totalSales * 0.2;
 
             document.getElementById('dashTotalSales').innerText = totalSales.toFixed(2);
             document.getElementById('dashTotalProfit').innerText = totalProfit.toFixed(2);
