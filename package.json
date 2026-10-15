@@ -1,14 +1,32 @@
 {
-  "name": "etag-accounting",
+  "name": "etag-desktop",
   "version": "1.0.0",
-  "description": "تطبيق اتاج للمحاسبات - نسخة سطح المكتب",
+  "description": "اتاج للمحاسبات - برنامج سطح المكتب",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win"
   },
-  "author": "Abdalslam Al-Breiki",
-  "license": "MIT",
+  "keywords": [],
+  "author": "Abdalslam",
+  "license": "ISC",
   "devDependencies": {
-    "electron": "^28.0.0"
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0"
+  },
+  "build": {
+    "appId": "com.etag.accounting",
+    "productName": "اتاج للمحاسبات",
+    "win": {
+      "target": "portable",
+      "icon": "aegoonh.png"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "preload.js",
+      "background.png",
+      "aegoonh.png"
+    ]
   }
 }
