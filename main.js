@@ -1,5 +1,9 @@
 const { app, BrowserWindow } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
+
+// إيقاف التسريع العتادي لضمان سلاسة وسرعة الأداء
+app.disableHardwareAcceleration();
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -14,6 +18,9 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  // التحقق تلقائياً من وجود تحديثات وتنزيلها
+  autoUpdater.checkForUpdatesAndNotify();
 }
 
 app.whenReady().then(() => {
