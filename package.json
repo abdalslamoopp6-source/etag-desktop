@@ -1,0 +1,14 @@
+{
+  "name": "etag-accounting",
+  "version": "1.0.0",
+  "description": "تطبيق اتاج للمحاسبات - نسخة سطح المكتب",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Abdalslam Al-Breiki",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  }
+}
