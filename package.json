@@ -27,8 +27,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "aegoonh.png",
-      "publish": ["never"]
+      "icon": "aegoonh.png"
     },
     "nsis": {
       "oneClick": true,
