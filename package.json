@@ -10,16 +10,31 @@
   "keywords": [],
   "author": "Abdalslam",
   "license": "ISC",
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
   "devDependencies": {
     "electron": "^28.0.0",
     "electron-builder": "^24.9.0"
   },
   "build": {
     "appId": "com.etag.accounting",
-    "productName": "اتاج للمحاسبات",
+    "productName": "EtajAccounting",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "abdalslamcopp6-source",
+        "repo": "etag-desktop"
+      }
+    ],
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "icon": "aegoonh.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false
     },
     "files": [
       "index.html",
